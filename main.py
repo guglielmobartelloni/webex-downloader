@@ -11,49 +11,32 @@ import urllib.request
 from tqdm import tqdm
 
 
-class DownloadProgressBar(tqdm):
-    def update_to(self, b=1, bsize=1, tsize=None):
-        if tsize is not None:
-            self.total = tsize
-        self.update(b * bsize - self.n)
-
-def download_file(url, file_name):
-    print(url)
-    with DownloadProgressBar(unit='B', unit_scale=True,
-                             miniters=1, desc=file_name) as t:
-        urllib.request.urlretrieve(url, filename=file_name, reporthook=t.update_to)
-
 
 url = "https://lti.educonnector.io/api/webex/recordings"
 
+cookies = {
+    'ahoy_visitor': '035461c0-946b-4c6c-ba83-0639be061063',
+    'ahoy_visit': 'c4e05e2b-afac-4557-8b20-2e337f5500ef',
+    '_ea_involvio_lti_session': 'GiO6vz7haPiVuyCnSdbaUJkffJn710I8AP6ruPJRzbN%2FKLGbozYhcw5bXfw4nG0IyHv6yUND6Kv1Gb3RZUOpy%2BvqR0GElF6gahc0hDtipv%2Bk81UqbA40aJNk5WeQfLiDtOOe85sxTmy1%2B8a%2BCl4gtmXX8TyzxTSKg%2FMtL1SNIPi%2FKUcqPV4ZALPKQDjq6Ur1FsDaubQDocZG2bgNBnMtPRyq%2FhYG4i5LYHrk7V1oCmJT6sSDuqZBBiOV6EHhtv5%2BdvS4oDKyLzdUVgF%2FE2Ymgak4viB29kdVESVaZiVwOS4vTJWBbBwkSkdw4%2BKt4NmcCTKTsUNlf6GE0z5ltO5q%2BpHCR2k%2BgfUw35EV2iONNL0Y%2F8pMHKynfz0%2F9kHc14jC%2BstaP767W9oq3KOKW8o4Ooa%2B1oFk%2B5DprsVRnquZWQKYbjzfcFya41e8iroPDul2uigUfwqKtKZ3qaBEpRG0a5t%2BsDDze0CdtrQYiNkpN8T%2Fhm2%2FXZAz3b6uW8LM48yzHI453ggagnlNY9wCn%2Bf2PTCoRvmmR5bICYcvN39H1tYxY4J3R%2BF8HM3hCvoXW26Yk1lu65SFF6An2IqpsXzFo9YOSo%2Bt6zbpDQ%2B1R00khIGJX%2BHOgCkiobqjPioUylbAQP0T4Z0aD%2F1yVX0sB4p5rTTqDpshi1tRFHghGA%3D%3D--6rEQVR9PXatBUpzu--av3vNCUSm9HsxE1dhsYbgA%3D%3D',
+}
 payload={}
 headers = {
   'authority': 'lti.educonnector.io',
   'accept': 'application/json',
   'accept-language': 'it-IT,it;q=0.5',
   'content-type': 'application/json',
-  'cookie': 'ahoy_visitor=035461c0-946b-4c6c-ba83-0639be061063; ahoy_visit=ab0e6a7d-e859-40df-bbcf-d28c03ade36c; _ea_involvio_lti_session=p4xmeywJMmyGcLQd3GWsuYULvFIOywudZh4CQpA3nS%2F2Xf7AXm5uIuoccqWNPxxPMRaLuUL6be24ARUskmd1xtY8CEB7wdoKI6eFpSEh5JT6UBVkg394d6xuezXsXY0JVfAEe7pHWjNzoqav0bIZ6iBn7o%2BgH74rf5c0nons%2FkkYflsZ1XbvEbxQqtCpTpP00EyRVr1%2F81MCORKf%2FnZgRXFq9awSkN5iG6Q92YHbFusMZ01qpzHpbHMsNHbOZ2gEB%2F2lNJRA6%2BUAyGeytfWldy4%2FZYO333Hfzf%2BpVKD4NVvbtBDbo1RFUHRUu7MzHaOMJH%2FGl1%2FMG%2BxJRErMNaHdcQE9gfhVRXLZFMVRqdnXtlpHpoLxTh%2FKA1RFefnNwfp0GIqDiC%2FTHGu7sjoHNwzL2Ytel6MUClV4rPh31S5aBkTa4pmgBy0rm297htA5c%2FxSzP8r613J3yIYSCABVFXFgRGJTX9JFVY1dBQBO5VBQuSgzzjOsdxugbEA%2B9CQgrs4GhjllY5foPxyOgYJoAH%2FFl7ivYEG1XalSFlgqZKELpIIAHgZGDHzja6YCFHVQYjV9uxjIV0IoRCM%2FynIVkEo8imE%2Fx2uoAJJNC140SoxUEH6n2Ndkb1NejOQcQWeS3Mau9bwFEKCHzkJNfohQi%2BIIlQPipmcJdns3eApzA%3D%3D--uvrQiNap0ZKGdblr--RfF%2B3fVyeRG1LDT4RbRIBw%3D%3D; _ea_involvio_lti_session=OKSmsXK5WDg%2BG4Zuhfn6W4j%2B1W4b%2B7RqypGN0YqwuSLfm24MCLzQtehCOskdYwFmowCLtnefG71grhf9nUrpRgNy%2FNqL2QPzzbEbh9VNJEF6tSqv%2FCj7j3VxpemgJEu9ecpouUU44ZGPwYQTQrZcr7hSDnB6aQ6n2cs4WlcJ%2BdEyccDGjV4u5k6awkeGYX%2BLlsxAW5CIQ%2FBh%2Bwdqg0%2FQEm5T9SoUHVm7r3FfCGQQIywmCalEM2BAtwquZio%2FhdmjLEaSO8MXO4yR9Ofo8WCyD6p7JGJaRBUFqgmm%2BK1yVCX5hKKAKbE1zry15kLgkCeWu%2FslOTWge7ZewWWTD2adVgX8GKWs4n0LRSsgjD0OXgkR%2FfHOStE%2F0bsSjFChiHK2uHpIv9HD%2BdFE%2FQeq9yd9VxVqmVKIhyf%2Fl75DnL1Ntb%2BqHbWFzCOFRp%2B7IBifWxGYt4kmcZyR9yPC6%2FKiUuJy4GbQX63lnfOclOMOdkzHiK4QPb8QEjFU6Hqs4WGi%2BPELCs5VKBLFi%2BdmjU8H9UeoNSr163H1S20FqkyJVIIdxi9LhY1XZBrtKsmeyMtueauEMJ%2FbhJhyxeK62vUZFuifiR3URxXQzBg80j0swL1zayf60FHDBlKfyeP%2FjPdu3EUJKqrvUR6XgvW6F47aNbaQErPSvHcjREg2%2FDVIQw%3D%3D--TlGqOjxF%2FHx1NgBd--ZCLflkGFTndDJUp4za65UA%3D%3D; ahoy_visit=ab0e6a7d-e859-40df-bbcf-d28c03ade36c'
 }
 
-response = requests.request("GET", url, headers=headers, data=payload)
+response = requests.request("GET", url, headers=headers, data=payload, cookies=cookies)
 
 lesson_list=json.loads(response.text)
-
-cookies = {
-    'ahoy_visitor': '035461c0-946b-4c6c-ba83-0639be061063',
-    'ahoy_visit': '62dc415a-e422-4a6f-891b-f620e96ffac9',
-    '_ea_involvio_lti_session': 'QTHw12%2FvM82rJ2uCPk%2BxT%2BtY%2FOpsyRFKK3sgrG9aHL96eyDrzaUeBJ4A0qT9JpMlorP7uC%2ByQJiPdVI5Oex4NMpPs3d0KlwkDUje6wZBhSRD1L63uLpuYn2gZEu5LtZNr8nLFJ1Mes02BnsQSWLXUT3G0%2BSZJJ8Bbcpp5iUPv2SVFo%2Foog9wUfvdgMxq1g%2F0bsnR6SKnUsxZRczhor39vm0KzZdCTpCSs8LpHQijHT7ZiUdXg7LCZJK4eS1jt%2BlHhFDqBNAYZGhs0O5xmLIJGw6TmQsZK6%2F7AozWhaAXhnXdvgyFyrNUeHiv%2Fz11naiKxtn8HVH8l%2FC%2BImmIFsRSWTbsPlALQeFahlsPekxlVJ4VGg2tAoNbe2MY7Dx7XkcV6vzn%2FeAhn3wE8A7fHwKVq45LV7Xjs4IqNsvWzY8bZIl86ZU%2BR6t06I8UKRaAThux01v%2FgFaxkOJqL1LBpvJsaehHRMoaPlwRZdlGlZ%2FLQLEyfxOOsVxk05VuP31orWzLVL01jY55rmkutb64%2BNK8UeMlfg%2BFPcR9Im1t%2BhPMEAn1GD70dQOPl3qETAsX5mgyJIFrGCcvBl3F7%2Bg4%2BU6Tm1V5SZrW6o%2B0Of87H2lARzIms%2F79v57fjSYw8tQ3IAP1eUjg11UubU1Ik867D7kntwC7LfhEhftEFDD9cQ%3D%3D--PFF0drxBd3%2F9zprA--6pEphbHE%2BtY62r3OqDkGug%3D%3D',
-}
-
 
 params = {
     'siteurl': 'unifirenze',
 }
 
-
-for i,lesson in enumerate(lesson_list):
-    if i == 2:
-        break
+recording_links = open('recording_links.txt', 'a')
+for lesson in lesson_list:
     headers = {
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': 'it-IT,it;q=0.6',
@@ -72,13 +55,12 @@ for i,lesson in enumerate(lesson_list):
     }
     response = requests.get(lesson['recording_url'])
     url=re.search("(?P<url>https?://[^\s]+)", response.text).group("url")
-    print(url)
     lesson_id=url[len("https://unifirenze.webex.com/recordingservice/sites/unifirenze/recording/playback/"):len(url)-2]
     response = requests.get('https://unifirenze.webex.com/webappng/api/v1/recordings/'+lesson_id+'/stream', params=params, cookies=cookies, headers=headers)
     response_json=json.loads(response.text)
     recording_link=response_json['downloadRecordingInfo']['downloadInfo']['mp4URL']
     file_name=response_json['recordName']+".mp4"
-    download_file(recording_link,file_name)
+    recording_links.write(recording_link + "\n")
 
 # download_file("https://nfg1wss.webex.com/nbr/MultiThreadDownloadServlet?siteid=14673972&recordid=319586842&confid=219360723902310382&from=MBS&trackingID=7686E9C027594B7E9734859844EAB187_1661949306633&language=it_IT&userid=568497462&serviceRecordID=319578207&ticket=SDJTSwAAAAVJrmJe8McLh14jyZrRzeEx2EpmHGPgr4xM3VGgshy9Bw%3D%3D&timestamp=1661958493121&islogin=yes&isprevent=no&ispwd=yes&siteurl=unifirenze.webex.com")
 
