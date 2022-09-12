@@ -1,14 +1,11 @@
 import requests
 import json
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.common.exceptions import NoSuchElementException
 from time import sleep
-from selenium.webdriver.common.keys import Keys
 import re
 
 import urllib.request
 from tqdm import tqdm
+import subprocess
 
 
 
@@ -16,8 +13,8 @@ url = "https://lti.educonnector.io/api/webex/recordings"
 
 cookies = {
     'ahoy_visitor': '035461c0-946b-4c6c-ba83-0639be061063',
-    'ahoy_visit': 'c4e05e2b-afac-4557-8b20-2e337f5500ef',
-    '_ea_involvio_lti_session': 'GiO6vz7haPiVuyCnSdbaUJkffJn710I8AP6ruPJRzbN%2FKLGbozYhcw5bXfw4nG0IyHv6yUND6Kv1Gb3RZUOpy%2BvqR0GElF6gahc0hDtipv%2Bk81UqbA40aJNk5WeQfLiDtOOe85sxTmy1%2B8a%2BCl4gtmXX8TyzxTSKg%2FMtL1SNIPi%2FKUcqPV4ZALPKQDjq6Ur1FsDaubQDocZG2bgNBnMtPRyq%2FhYG4i5LYHrk7V1oCmJT6sSDuqZBBiOV6EHhtv5%2BdvS4oDKyLzdUVgF%2FE2Ymgak4viB29kdVESVaZiVwOS4vTJWBbBwkSkdw4%2BKt4NmcCTKTsUNlf6GE0z5ltO5q%2BpHCR2k%2BgfUw35EV2iONNL0Y%2F8pMHKynfz0%2F9kHc14jC%2BstaP767W9oq3KOKW8o4Ooa%2B1oFk%2B5DprsVRnquZWQKYbjzfcFya41e8iroPDul2uigUfwqKtKZ3qaBEpRG0a5t%2BsDDze0CdtrQYiNkpN8T%2Fhm2%2FXZAz3b6uW8LM48yzHI453ggagnlNY9wCn%2Bf2PTCoRvmmR5bICYcvN39H1tYxY4J3R%2BF8HM3hCvoXW26Yk1lu65SFF6An2IqpsXzFo9YOSo%2Bt6zbpDQ%2B1R00khIGJX%2BHOgCkiobqjPioUylbAQP0T4Z0aD%2F1yVX0sB4p5rTTqDpshi1tRFHghGA%3D%3D--6rEQVR9PXatBUpzu--av3vNCUSm9HsxE1dhsYbgA%3D%3D',
+    'ahoy_visit': 'd4ae1a4f-3930-4ddd-84d4-f089afe1631e',
+    '_ea_involvio_lti_session': 'FSfqgwsaiLUaHuTlF2TtXMBzhx%2FgCTVxRXNdfcStBnf%2BeUvjZFyRvNS83A%2Fjweev6Ec0W9ydbzt2b0H8idf7tpjLUqWGQFRdHLH6sr94YTIr1%2Bg665OrZYS0yNWByNYm1vUTFo2Ycodyue7kqBS7odDJADqI9x%2F%2FjTd94xJbSXDkcBA5%2FNCKCc2CLWWZh7n%2FA75PhEeu73SjvvenxRToVfnt%2BTQ7JttaYLQ1KuiptGuVMiZ7FswuNHFuox8URyL9p2NrcBSgBy8Q0SJL9PIAPNh3mQ5I5AZGlMLDJYKFUdSoPUkRCf2%2Buia5jfmrGL%2B9GYr1OmJtFnmkNA2m06jg6jrXl%2Fi1y48wQkJM6fz2mmnVmHN1MOzCP4RBynP80IO%2B7G%2F%2BFfGlo%2FIcbegMqyDJPxMnHjhgfxkbh3OJ8Nm%2FvtxDy9n7QffLYuUsIF3S8EzE9wu%2F6xB9xabTRTK1d01wJ54FGbCJgKnv59tgA8zkO5htiGtij%2B8JyGyM225vnyciHglzIGDMSrI2ejUIS20gFXNMu4rKqafiJeaI4tyYqZH5p%2Bkg0%2BBmbtZPTzGJ3LLPur7EMi2j9I2exNzG4Q%2BvlgcwzcpOP5U27GDl62OkzKtoLC%2Fp41f415jZrLPyhlTnNRS7Smy90mYxpfYquEdRMQ6BZhGTMhJ3FYqunQ%3D%3D--RRxhsk0R7Aluo%2BXr--Qdm4HnWaLQZiR7nNkH1pHQ%3D%3D',
 }
 payload={}
 headers = {
@@ -57,10 +54,12 @@ for lesson in lesson_list:
     url=re.search("(?P<url>https?://[^\s]+)", response.text).group("url")
     lesson_id=url[len("https://unifirenze.webex.com/recordingservice/sites/unifirenze/recording/playback/"):len(url)-2]
     response = requests.get('https://unifirenze.webex.com/webappng/api/v1/recordings/'+lesson_id+'/stream', params=params, cookies=cookies, headers=headers)
+    print(response.text)
     response_json=json.loads(response.text)
     recording_link=response_json['downloadRecordingInfo']['downloadInfo']['mp4URL']
     file_name=response_json['recordName']+".mp4"
     recording_links.write(recording_link + "\n")
+    subprocess.run(["axel", recording_link])
 
 # download_file("https://nfg1wss.webex.com/nbr/MultiThreadDownloadServlet?siteid=14673972&recordid=319586842&confid=219360723902310382&from=MBS&trackingID=7686E9C027594B7E9734859844EAB187_1661949306633&language=it_IT&userid=568497462&serviceRecordID=319578207&ticket=SDJTSwAAAAVJrmJe8McLh14jyZrRzeEx2EpmHGPgr4xM3VGgshy9Bw%3D%3D&timestamp=1661958493121&islogin=yes&isprevent=no&ispwd=yes&siteurl=unifirenze.webex.com")
 
